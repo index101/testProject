@@ -7,6 +7,7 @@
     "build": "tsc",
     "start": "ts-node src/execution-proof.ts",
     "proof": "ts-node src/execution-proof.ts",
+    "orchestrate": "ts-node src/run-orchestrator.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

@@ -38,12 +38,21 @@ const MODULE_NAMES = [
   "SignalIntegrityChecker",
 ];
 
+interface VideoResult {
+  success: boolean;
+  videos: { name: string; file: string }[];
+  srt: { name: string; file: string }[];
+}
+
 export default function Home() {
   const [signal, setSignal] = useState<SignalInput | null>(null);
   const [results, setResults] = useState<Record<string, SignalOutput> | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedModules, setSelectedModules] = useState<string[]>(MODULE_NAMES);
+  const [videoLoading, setVideoLoading] = useState(false);
+  const [videoError, setVideoError] = useState<string | null>(null);
+  const [videoResult, setVideoResult] = useState<VideoResult | null>(null);
 
   const fetchSample = useCallback(async () => {
     setLoading(true);
@@ -89,6 +98,22 @@ export default function Home() {
       prev.includes(name) ? prev.filter((m) => m !== name) : [...prev, name]
     );
   };
+
+  const generateVideos = useCallback(async () => {
+    setVideoLoading(true);
+    setVideoError(null);
+    setVideoResult(null);
+    try {
+      const res = await fetch("/api/videos/generate", { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to generate");
+      setVideoResult(data);
+    } catch (e) {
+      setVideoError(e instanceof Error ? e.message : "Unknown error");
+    } finally {
+      setVideoLoading(false);
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-grid">
@@ -216,6 +241,52 @@ export default function Home() {
             )}
           </section>
         </div>
+
+        {/* Video Pipeline */}
+        <section className="mt-8 p-5 rounded-xl border border-[var(--border)] bg-[var(--surface)]">
+          <h2 className="text-sm font-medium text-[var(--accent)] mb-3 flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-[var(--accent)]" />
+            Video Pipeline (Signal → Video)
+          </h2>
+          <p className="text-sm text-[var(--text-secondary)] mb-4">
+            Generate HIGH and LOW priority videos from the integrated pipeline. Takes ~30–60 seconds.
+          </p>
+          <button
+            onClick={generateVideos}
+            disabled={videoLoading}
+            className="px-4 py-2 rounded-lg bg-[var(--accent)] text-[var(--background)] font-medium text-sm hover:bg-[var(--accent-muted)] disabled:opacity-50 transition-colors"
+          >
+            {videoLoading ? "Generating videos…" : "3. Generate Videos"}
+          </button>
+          {videoError && (
+            <p className="mt-3 text-sm text-red-400">{videoError}</p>
+          )}
+          {videoResult && (
+            <div className="mt-6 grid sm:grid-cols-2 gap-4">
+              {videoResult.videos.map((v) => (
+                <div key={v.file} className="rounded-lg border border-[var(--border)] bg-[var(--background)] overflow-hidden">
+                  <div className="p-2 text-xs font-medium text-[var(--text-primary)] border-b border-[var(--border)]">
+                    {v.name}
+                  </div>
+                  <video
+                    src={`/api/videos/file?name=${encodeURIComponent(v.file)}`}
+                    controls
+                    className="w-full aspect-[9/16] max-h-[320px] object-contain bg-black"
+                  />
+                  <div className="p-2 flex gap-2">
+                    <a
+                      href={`/api/videos/file?name=${encodeURIComponent(v.file)}`}
+                      download={v.file}
+                      className="text-xs text-[var(--accent)] hover:underline"
+                    >
+                      Download MP4
+                    </a>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
 
         {/* Architecture note */}
         <section className="mt-8 p-5 rounded-xl border border-[var(--border)] bg-[var(--surface)]/50">

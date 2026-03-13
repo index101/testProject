@@ -1,0 +1,30 @@
+{
+  "name": "project-subtitle",
+  "version": "1.0.0",
+  "description": "Video production pipeline for educational content",
+  "scripts": {
+    "build": "nest build",
+    "start": "nest start",
+    "m1": "ts-node -r tsconfig-paths/register src/run-m1.ts",
+    "m1:deliver": "ts-node -r tsconfig-paths/register src/run-m1.ts --deliver",
+    "integrated": "ts-node -r tsconfig-paths/register src/run-integrated.ts"
+  },
+  "dependencies": {
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "@ffprobe-installer/ffprobe": "^2.1.2",
+    "@nestjs/common": "^10.0.0",
+    "@nestjs/core": "^10.0.0",
+    "fluent-ffmpeg": "^2.1.3",
+    "node-edge-tts": "^1.2.10",
+    "reflect-metadata": "^0.2.0",
+    "rxjs": "^7.8.0"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^10.0.0",
+    "@types/fluent-ffmpeg": "^2.1.24",
+    "@types/node": "^20.0.0",
+    "ts-node": "^10.9.0",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.0.0"
+  }
+}
