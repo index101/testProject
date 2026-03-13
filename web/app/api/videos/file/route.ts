@@ -28,7 +28,9 @@ export async function GET(request: NextRequest) {
   }
 
   const projectSubtitlePath = findProjectSubtitle();
-  const outputPath = path.join(projectSubtitlePath, 'output', name);
+  const outputPath = name.endsWith('.srt')
+    ? path.join(projectSubtitlePath, 'subtitles-reference', name)
+    : path.join(projectSubtitlePath, 'output', name);
   if (!fs.existsSync(outputPath)) {
     return NextResponse.json({ error: 'File not found. Generate videos first.' }, { status: 404 });
   }

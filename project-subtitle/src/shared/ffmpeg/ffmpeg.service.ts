@@ -113,7 +113,7 @@ export class FfmpegService {
     return new Promise((resolve, reject) => {
       const fontSize = options.subtitleFontSize ?? 18;
       const escapedSrt = this.escapeSubtitlePath(srtPath);
-      const subtitlesFilter = `subtitles='${escapedSrt}':force_style='Alignment=2,MarginV=150,FontSize=72,FontName=Arial,PrimaryColour=&H00FFFFFF&,OutlineColour=&H000000&,Outline=1,Shadow=0,PlayResX=1080,PlayResY=1920,MarginL=108,MarginR=108'`;
+      const subtitlesFilter = `subtitles='${escapedSrt}':force_style='Alignment=2,MarginV=150,FontSize=72,FontName=Arial,PrimaryColour=&H00FFFFFF&,OutlineColour=&H000000&,Outline=1,Shadow=0,WrapStyle=2,PlayResX=1080,PlayResY=1920,MarginL=108,MarginR=108'`;
 
       ffmpeg()
         .input(visualPath)

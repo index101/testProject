@@ -77,8 +77,10 @@ export class IntegratedService {
       subtitleFontSize: videoParams.subtitleFontSize,
     });
 
-    // 7. Copy SRT (use -reference suffix so players don't auto-load and duplicate burned-in subs)
-    const srtDeliveryPath = path.join(outputDir, outputFilename.replace('.mp4', '-subtitles-reference.srt'));
+    // 7. Copy SRT outside output/ so players never auto-load (avoids double subtitles)
+    const refDir = path.join(path.dirname(outputDir), 'subtitles-reference');
+    await fs.mkdir(refDir, { recursive: true });
+    const srtDeliveryPath = path.join(refDir, outputFilename.replace('.mp4', '-subtitles-reference.srt'));
     await fs.copyFile(srtPath, srtDeliveryPath);
 
     // 8. Technical note

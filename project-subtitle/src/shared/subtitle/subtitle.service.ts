@@ -22,11 +22,12 @@ function mergeSegments(
   let current: string[] = [];
   let startMs = 0;
   const config = {
-    fast: { targetWords: 2, maxDurationMs: 2000, maxChars: 25 },
-    normal: { targetWords: 3, maxDurationMs: 2800, maxChars: 25 },
-    slow: { targetWords: 4, maxDurationMs: 3500, maxChars: 25 },
+    fast: { targetWords: 1, maxDurationMs: 1500, maxChars: 10 },
+    normal: { targetWords: 2, maxDurationMs: 2200, maxChars: 12 },
+    slow: { targetWords: 2, maxDurationMs: 2800, maxChars: 14 },
   }[pacing];
   const { targetWords, maxDurationMs, maxChars } = config;
+  const GAP_MS = 80; // gap between segments to avoid overlap on screen
 
   for (const seg of segments) {
     const words = seg.part.trim().split(/\s+/).filter(Boolean);
@@ -84,10 +85,12 @@ export class SubtitleService {
     pacing: 'fast' | 'normal' | 'slow' = 'normal',
   ): Promise<string> {
     const merged = mergeSegments(segments, pacing);
+    const GAP_MS = 80;
     const lines: string[] = [];
     merged.forEach((seg, i) => {
+      const end = i < merged.length - 1 ? Math.max(seg.start, seg.end - GAP_MS) : seg.end;
       lines.push(String(i + 1));
-      lines.push(`${msToSrtTime(seg.start)} --> ${msToSrtTime(seg.end)}`);
+      lines.push(`${msToSrtTime(seg.start)} --> ${msToSrtTime(end)}`);
       lines.push(seg.text);
       lines.push('');
     });
